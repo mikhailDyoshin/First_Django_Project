@@ -11,7 +11,18 @@ class Question(models.Model):
         return self.question_text
 
     def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+        """
+            The method compares the question's publication date
+            with the current date and time,
+            and the date and time one day before.
+
+            If the publication date lies between the two of those dates,
+            the method will return True, else - False. 
+        """
+
+        now = timezone.now()
+        return timezone.now() - datetime.timedelta(days=1) <= self.pub_date <= now 
 
 
 class Choice(models.Model):
