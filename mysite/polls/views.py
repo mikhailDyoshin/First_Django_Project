@@ -5,6 +5,7 @@ from .models import Question, Choice
 from django.template import loader
 from django.http import Http404
 from django.urls import reverse
+from django.db.models import F
 
 def index(request):
     # Take 5 the latest questions in the system
@@ -49,7 +50,7 @@ def vote (request, question_id):
             'error_message': "You didn't select a choice"
         })
     else:
-        selected_choise.votes += 1
+        selected_choise.votes = F('votes') + 1
         selected_choise.save()
 
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
