@@ -1,9 +1,10 @@
 from curses.ascii import HT
-from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Question
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import Question, Choice
 from django.template import loader
 from django.http import Http404
+from django.urls import reverse
 
 def index(request):
     # Take 5 the latest questions in the system
@@ -32,9 +33,23 @@ def detail(request, question_id):
 
 
 def results(request, question_id):
-    responce = f'You\'re looing at the resulsts of  question {question_id}'
-    return HttpResponse(responce)
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/results.html', {'question': question})
 
 
 def vote (request, question_id):
-    return HttpResponse(f'You\'re voting on question {question_id}')
+    # Get an object of Question class with question_id ID
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        selected_choise = question.choice_set.get(pk = request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist):
+        # Redisplay the question voting form:
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "You didn't select a choice"
+        })
+    else:
+        selected_choise.votes += 1
+        selected_choise.save()
+
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
