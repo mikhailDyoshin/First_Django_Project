@@ -20,9 +20,24 @@ class IndexView(generic.ListView):
             those to be published in the future
         """
 
-        return Question.objects.filter(
+        # Filter only questions with pub_date in the past
+        last_five_past_questions = Question.objects.filter(
                 pub_date__lte=timezone.now()
-            ).order_by('-pub_date')[:5]
+            )
+
+        # Gather IDs of the questions that have one choice at least
+        l = []
+        for q in last_five_past_questions:
+            chs = q.choice_set.all()
+            if chs:
+                l.append(q.id)
+
+        # Filter only questions with choices and take the last 5 of them
+        questions_with_choices = last_five_past_questions.filter(
+            id__in=l
+        ).order_by('-pub_date')[:5]
+
+        return questions_with_choices
 
 
 class DetailView(generic.DetailView):
