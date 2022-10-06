@@ -7,6 +7,21 @@ from .models import Question
 import datetime
 
 
+def create_question(question_text, days):
+    """
+        Creates a question with the given "question_text"
+        and published the given number of "days"
+        offset to now
+        (days < 0 for questions published in the past,
+        days > 0 for questions that yet to be published.)
+    """
+
+    time = timezone.now() + datetime.timedelta(days=days)
+
+    return Question.objects.create(question_text=question_text, pub_date=time)
+
+
+# ********************Tests*for*was_published_recently********************
 class QuestionModelTests(TestCase):
 
     def test_was_published_recently_with_future_question(self):
@@ -52,20 +67,7 @@ class QuestionModelTests(TestCase):
         self.assertIs(recent_question.was_published_recently(), True)
 
 
-def create_question(question_text, days):
-    """
-        Creates a question with the given "question_text"
-        and published the given number of "days"
-        offset to now
-        (days < 0 for questions published in the past,
-        days > 0 for questions that yet to be published.)
-    """
-
-    time = timezone.now() + datetime.timedelta(days=days)
-
-    return Question.objects.create(question_text=question_text, pub_date=time)
-
-
+# ********************Tests*for*get_queryset*in*IndexView*class********************
 class QuestionIndexViewTest(TestCase):
 
     def test_no_questions(self):
@@ -145,6 +147,8 @@ class QuestionIndexViewTest(TestCase):
             [question2, question1]
         )
 
+
+# ********************Tests*for*get_queryset*in*DetailView*class********************
 class QuestionDetailViewTest(TestCase):
 
     def test_future_question(self):
@@ -173,6 +177,41 @@ class QuestionDetailViewTest(TestCase):
         past_question = create_question("Past question", days=-5)
 
         url = reverse('polls:detail', args=(past_question.id,))
+
+        response = self.client.get(url)
+
+        self.assertContains(response, past_question.question_text)
+        
+
+# ********************Tests*for*get_queryset*in*ResultsView*class********************
+class QuestionResultsView(TestCase):
+
+    def test_future_question(self):
+        """
+            The results view of a question
+            which publication date is in the future
+            returns a 404 not found.
+        """
+
+        future_question = create_question("Future question", days=5)
+
+        url = reverse('polls:results', args=(future_question.id,))
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_past_question(self):
+        """
+            The results view of a question
+            which publication date is in the past
+            displays the question's choices and their votes.
+        """
+
+        past_question = create_question("Past question", days=-5)
+
+        url = reverse('polls:results', args=(past_question.id,))
 
         response = self.client.get(url)
 
