@@ -247,6 +247,7 @@ class QuestionDetailViewTest(TestCase):
 
         self.assertContains(response, past_question.question_text)
 
+
     def test_past_question_without_choice(self):
         """
             The detail view of a question
@@ -255,10 +256,9 @@ class QuestionDetailViewTest(TestCase):
             doesn't display the question's text. 
         """
 
-        past_question_without_choice = create_question_with_choice(
+        past_question_without_choice = create_question(
             question_text="Past question without choice",
-            days = -5,
-            choice = 'One'
+            days = -5
         )
 
         url = reverse('polls:detail', 
@@ -267,8 +267,7 @@ class QuestionDetailViewTest(TestCase):
 
         response = self.client.get(url)
 
-        
-
+        self.assertEqual(response.status_code, 404)
         
 
 # ********************Tests*for*get_queryset*in*ResultsView*class********************
@@ -290,18 +289,42 @@ class QuestionResultsView(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-    def test_past_question(self):
+    def test_past_question_with_choice(self):
         """
             The results view of a question
             which publication date is in the past
-            displays the question's choices and their votes.
+            displays the question's choices and their votes
+            if it has ones.
         """
 
-        past_question = create_question("Past question", days=-5)
+        past_question = create_question_with_choice(
+            question_text="Past question with choice",
+            days=-5,
+            choice='One'
+        )
 
         url = reverse('polls:results', args=(past_question.id,))
 
         response = self.client.get(url)
 
         self.assertContains(response, past_question.question_text)
-        
+
+
+    def test_past_question_without_choice(self):
+        """
+            The results view of a question
+            which publication date is in the past
+            doesn't display the question's text
+            if it hasn't choices.
+        """
+
+        past_question = create_question(
+            question_text='Past question without choice',
+            days = -2
+        )
+
+        url = reverse('polls:results', args=(past_question.id,))
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
