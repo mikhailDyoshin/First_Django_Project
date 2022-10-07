@@ -6,7 +6,7 @@ from django.urls import reverse
 from .models import Question
 import datetime
 
-
+# q.choice_set.create(choice_text='Not much', votes=0)
 def create_question(question_text, days):
     """
         Creates a question with the given "question_text"
@@ -19,6 +19,22 @@ def create_question(question_text, days):
     time = timezone.now() + datetime.timedelta(days=days)
 
     return Question.objects.create(question_text=question_text, pub_date=time)
+
+
+def create_question_with_choice(question_text, days, choice):
+
+    time = timezone.now() + datetime.timedelta(days=days)
+
+    question_with_choice = Question.objects.create(
+        question_text=question_text, pub_date=time
+    )
+
+    question_with_choice.choice_set.create(
+        choice_text=choice,
+        votes=0
+    )
+
+    return question_with_choice
 
 
 # ********************Tests*for*was_published_recently********************
@@ -86,10 +102,15 @@ class QuestionIndexViewTest(TestCase):
     def test_past_question(self):
         """
             Questions with a pub_date in the past
+            and with choices
             are displayed on the index page.
         """
 
-        question = create_question("Past question", days=-30)
+        question = create_question_with_choice(
+            question_text="Past question", 
+            days=-30, 
+            choice='One'
+        )
 
         response = self.client.get(reverse('polls:index'))
 
@@ -119,10 +140,14 @@ class QuestionIndexViewTest(TestCase):
     def test_future_question_and_past_question(self):
         """
             If both past and future questions exist,
-            only past question is displayed.
+            only past question with choices is displayed.
         """
 
-        question = create_question("Past question", days=-30)
+        question = create_question_with_choice(
+            question_text="Past question",
+            days=-30,
+            choice='One'
+        )
         create_question("Future question", days=30)
 
         response = self.client.get(reverse('polls:index'))
@@ -134,11 +159,21 @@ class QuestionIndexViewTest(TestCase):
     
     def test_two_past_question(self):
         """
-            The index page may display multiple questions.
+            The index page may display multiple questions
+            with choices.
         """
 
-        question1 = create_question("Past question 1", days = -30)
-        question2 = create_question("Past question 2", days=-5)
+        question1 = create_question_with_choice(
+            question_text="Past question 1",
+            days = -30,
+            choice='One'
+        )
+
+        question2 = create_question_with_choice(
+            question_text="Past question 2",
+            days = -5,
+            choice='Two'
+        )
 
         response = self.client.get(reverse('polls:index'))
 
@@ -147,6 +182,32 @@ class QuestionIndexViewTest(TestCase):
             [question2, question1]
         )
 
+
+    def test_question_without_choice(self):
+        """
+            The index page doesn't display questions without choices.
+        """
+
+        create_question("Question without choice", days=-5)
+        response = self.client.get(reverse('polls:index'))
+
+        self.assertContains(response, "No polls are available")
+
+
+    def test_question_with_choice(self):
+        """
+            The index page displays questions with choices.
+        """
+
+        question_with_choice = create_question_with_choice(
+            question_text="Who", 
+            days=-2, 
+            choice="Dunno"
+        )
+
+        response = self.client.get(reverse('polls:index'))
+
+        self.assertContains(response, question_with_choice.question_text)
 
 # ********************Tests*for*get_queryset*in*DetailView*class********************
 class QuestionDetailViewTest(TestCase):
