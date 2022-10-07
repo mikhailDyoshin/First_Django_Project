@@ -46,10 +46,24 @@ class DetailView(generic.DetailView):
 
     def get_queryset(self):
         """
-            Excludes any question that isn't published yet.
+            Excludes any question that isn't published yet
+            or has no choices.
         """
 
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        # Filter only questions with pub_date in the past
+        past_questions = Question.objects.filter(pub_date__lte=timezone.now())
+
+        # Gather IDs of the questions that have one choice at least
+        l = []
+        for q in past_questions:
+            chs = q.choice_set.all()
+            if chs:
+                l.append(q.id)
+
+        # Filter only questions with choices
+        questions_with_choices = past_questions.filter(id__in=l)
+
+        return questions_with_choices
 
 
 class ResultsView(generic.DetailView):

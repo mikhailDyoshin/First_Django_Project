@@ -235,13 +235,40 @@ class QuestionDetailViewTest(TestCase):
             displays the question's text. 
         """
 
-        past_question = create_question("Past question", days=-5)
+        past_question = create_question_with_choice(
+            question_text="Past question",
+            days=-5,
+            choice='One'
+        )
 
         url = reverse('polls:detail', args=(past_question.id,))
 
         response = self.client.get(url)
 
         self.assertContains(response, past_question.question_text)
+
+    def test_past_question_without_choice(self):
+        """
+            The detail view of a question
+            with the past publication date
+            but without a choice
+            doesn't display the question's text. 
+        """
+
+        past_question_without_choice = create_question_with_choice(
+            question_text="Past question without choice",
+            days = -5,
+            choice = 'One'
+        )
+
+        url = reverse('polls:detail', 
+            args=(past_question_without_choice.id,)
+        )
+
+        response = self.client.get(url)
+
+        
+
         
 
 # ********************Tests*for*get_queryset*in*ResultsView*class********************
