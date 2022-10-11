@@ -17,6 +17,8 @@ body{
     width: 500px;
     height: max-content;
 
+
+
     border: 5px solid black ;
     border-radius: 20px;
 
@@ -31,17 +33,27 @@ body{
     display: inline-block;
 
     margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
 
     text-align: left;
 
     font-size: 24px;
 }
 
-.button_style{
+results_wrapper ul li{
     display: inline-block;
+    width: max-content;
+}
+
+.button_style{
+    display: block;
 
     height: 30px;
     width: 200px;
+
+    margin-left: auto;
+    margin-right: auto;
 
     border: 2px solid black;
     border-radius: 10px;
