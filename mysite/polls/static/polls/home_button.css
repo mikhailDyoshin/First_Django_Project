@@ -1,0 +1,29 @@
+
+.home_button_wrapper a{
+    display: block;
+    height: 50px;
+    width: 50px;
+
+    margin: 20px;
+    padding: 5px;
+
+    border: 2px solid black;
+
+    border-radius: 50%;
+
+    line-height: 50px;
+
+    text-align: center;
+
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+    color: black;
+
+    transition: all 0.3s;
+}
+
+.home_button_wrapper a:hover{
+    color: rgb(225, 121, 1);
+    background-color: black;
+}

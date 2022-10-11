@@ -1,3 +1,9 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/home_button.css' %}">
+<link rel="stylesheet" href="{% static 'polls/detail_style.css' %}">
+<link rel="stylesheet" href="{% static 'polls/detail_style_radio_button.css' %}">
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,28 +13,38 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="{% url 'polls:vote' question.id %}" method="post">
-        {% csrf_token %}
-        <fieldset>
 
-            <legend>
-                <h1>{{ question.question_text }}</h1>
-            </legend>
+    <div class="home_button_wrapper">
+        <a href="{% url 'polls:index'%}" class="home_button">Home</a>
+    </div>
 
-            {% if error_message %}
-            <p>
-                <strong>{{ error_message }}</strong>
-            </p>
-            {% endif %}
-
-            {% for choice in question.choice_set.all %}
-                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-                <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-            {% endfor %}
-
-        </fieldset>
-
-        <input type="submit" value="Vote">
-    </form>
+    <div class="form_wrapper">
+        <form action="{% url 'polls:vote' question.id %}" method="post">
+            {% csrf_token %}
+            <fieldset>
+    
+                <legend>
+                    <h1 class="header_style">{{ question.question_text }}</h1>
+                </legend>
+    
+                {% if error_message %}
+                <p>
+                    <strong>{{ error_message }}</strong>
+                </p>
+                {% endif %}
+    
+                {% for choice in question.choice_set.all %}
+                    <label for="choice{{ forloop.counter }}" class="container">{{ choice.choice_text }}
+                        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                        <span class="checkmark"></span>
+                    </label><br>
+                {% endfor %}
+    
+            </fieldset>
+    
+            <input class="button_style" type="submit" value="Vote">
+        </form>
+    </div>
+    
 </body>
 </html>

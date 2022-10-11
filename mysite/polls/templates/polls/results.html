@@ -1,3 +1,8 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/home_button.css' %}">
+<link rel="stylesheet" href="{% static 'polls/results_style.css' %}">
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,14 +12,22 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>{{ question.question_text }}</h1>
 
-    <ul>
-    {% for choice in question.choice_set.all %}
-        <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-    {% endfor %}
-    </ul>
+    <div class="home_button_wrapper">
+        <a href="{% url 'polls:index'%}" class="home_button">Home</a>
+    </div>
 
-    <a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+    <div class="results_wrapper">
+        <h1 class="header_style">{{ question.question_text }}</h1>
+
+        <ul>
+        {% for choice in question.choice_set.all %}
+            <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+        {% endfor %}
+        </ul>
+    
+        <a class="button_style" href="{% url 'polls:detail' question.id %}">Vote again?</a>
+    </div>
+    
 </body>
 </html>

@@ -1,14 +1,13 @@
-li a{
-    text-decoration: none;
-}
-
 body{
     background: url(images/background_image.png) no-repeat;
 }
 
-.list_style{
-    list-style-type: none;
-    
+.form_wrapper{
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
     position: absolute;
     left: 50%;
     top: 35%;
@@ -24,27 +23,38 @@ body{
     text-align: center;
 }
 
-.list_style > :not(:last-child){
+fieldset{
+    height: max-content;
+    text-align: start;
+    margin-bottom: 2px;
+    padding-bottom: 0px;
+
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+.header_style{
     margin-bottom: 5px;
 }
 
-.question_link_style{
-    display: block;
+.button_style{
+    height: 30px;
+    width: 200px;
 
-    padding: 5px;
+    border: 2px solid black;
+    border-radius: 10px;
 
-    border: 3px solid black;
-    border-radius: 20px;
+    background-color: transparent;
 
-    font-size: 24;
     font-weight: bold;
+    font-size: 14;
     color: black;
 
     transition: all 0.5s;
-
+    
 }
 
-.question_link_style:hover{
+.button_style:hover{
     color: rgb(239, 150, 8);
     background-color: black;
 }
